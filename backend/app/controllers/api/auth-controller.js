@@ -1,15 +1,15 @@
-const { sics, wip } = require("../../db.js").default;
-import { response2 } from "../../helpers/response";
-import InvalidCredentialException from "../../exceptions/invalid-credential-exception";
-import UnauthenticatedException from "../../exceptions/unauthenticated-exception";
-import { generateTokens } from "../../helpers/auth";
+import db from '../../../db.js';
+import response2 from "../../helpers/response.js";
+import InvalidCredentialException from "../../exceptions/invalid-credential-exception.js";
+import UnauthenticatedException from "../../exceptions/unauthenticated-exception.js";
+import { generateTokens } from "../../helpers/auth.js";
 
 class AuthController {
   async login(req, res, next) {
     const { username, password } = req.body;
 
     try {
-      const user = await wip.wip_mst_user.findUnique({
+      const user = await db.mst_user.findUnique({
         where: {
           username: username,
         },
@@ -45,7 +45,7 @@ class AuthController {
         roleResponse.push(role.role_name);
       }
 
-      const employee = await wip.wip_mst_employee.findUnique({
+      const employee = await db.mst_employee.findUnique({
         where: {
           id: user.employee_id,
         },
@@ -70,4 +70,5 @@ class AuthController {
   }
 }
 
-export default new AuthController();
+const controller = new AuthController();
+export const { login } = controller;

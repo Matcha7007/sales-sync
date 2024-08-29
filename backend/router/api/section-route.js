@@ -1,6 +1,6 @@
-import { GetAll, GetById, Create, Update, Delete } from '../../app/controllers/api/section-controller'
-import { auth } from '../../app/middleware/auth'
-import { logMiddleware } from '../../app/middleware/logaktivitas'
+import { GetAll, GetById, Create, Update, Delete } from '../../app/controllers/api/section-controller.js'
+import { auth } from '../../app/middleware/auth.js'
+import { logMiddleware } from '../../app/middleware/logaktivitas.js'
 
 
 export const group = {
@@ -34,3 +34,6 @@ export const routes = [
         handler: Delete
     },
 ]
+
+const SectionRoutes = { group, routes };
+export default SectionRoutes;

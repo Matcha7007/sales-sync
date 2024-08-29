@@ -1,5 +1,5 @@
 import { compare } from 'bcrypt'
-import { generateAccessToken } from '../modules/tokenizer'
+import { generateAccessToken } from '../modules/tokenizer/index.js'
 // const { RefreshToken } = require('../models')
 
 class AuthService {
@@ -24,4 +24,5 @@ class AuthService {
 
 }
 
-export default new AuthService()
+const auth = new AuthService();
+export const { isPasswordAMatch, generateTokens } = auth;

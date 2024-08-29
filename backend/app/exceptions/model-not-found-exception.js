@@ -1,4 +1,4 @@
-import BaseException from './base-exception'
+import BaseException from './base-exception.js'
 
 class ModelNotFoundException extends BaseException {
 

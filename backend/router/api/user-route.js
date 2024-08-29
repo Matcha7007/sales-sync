@@ -1,5 +1,5 @@
-import { GetAll, GetById, Create, Update, Delete, UpdatePassword } from '../../app/controllers/api/user-controller'
-import { auth } from '../../app/middleware/auth'
+import { GetAll, GetById, Create, Update, Delete, UpdatePassword } from '../../app/controllers/api/user-controller.js'
+import { auth } from '../../app/middleware/auth.js'
 
 
 export const group = {
@@ -38,3 +38,6 @@ export const routes = [
         handler: UpdatePassword
     }
 ]
+
+const UserRoutes = { group, routes };
+export default UserRoutes;

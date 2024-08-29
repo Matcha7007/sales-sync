@@ -1,6 +1,6 @@
-import { GetAll, Create, Update, Delete } from '../../app/controllers/api/department-controller'
-import { auth } from '../../app/middleware/auth'
-import { logMiddleware } from '../../app/middleware/logaktivitas'
+import { GetAll, Create, Update, Delete } from '../../app/controllers/api/department-controller.js'
+import { auth } from '../../app/middleware/auth.js'
+import { logMiddleware } from '../../app/middleware/logaktivitas.js'
 
 
 export const group = {
@@ -29,3 +29,6 @@ export const routes = [
         handler: Delete
     },
 ]
+
+const DepartmentRoutes = { group, routes };
+export default DepartmentRoutes;

@@ -1,13 +1,13 @@
-const { sics, wip } = require("../../db.js").default;
-import { response2 } from "../../helpers/response";
+import db from '../../../db.js';
+import response2 from "../../helpers/response.js";
 import { hashSync } from "bcrypt";
 import { randomUUID } from 'crypto';
-import { isPasswordAMatch } from "../../helpers/auth";
+import { isPasswordAMatch } from "../../helpers/auth.js";
 
 class UserController {
   GetAll = async (req, res) => {
     try {
-      const response = await wip.$queryRaw`
+      const response = await db.$queryRaw`
                                SELECT 
                                     a.id,
                                     a.uuid, 
@@ -17,10 +17,10 @@ class UserController {
                                     c.department_name,
                                     d.section_name,
                                     a.role
-                                FROM wip_mst_user a 
-                                    INNER JOIN wip_mst_employee b ON a.employee_id= b.id
-                                    INNER JOIN wip_mst_department c ON b.department_id= c.id
-                                    INNER JOIN wip_mst_section d ON b.section_id= d.id
+                                FROM mst_user a 
+                                    INNER JOIN mst_employee b ON a.employee_id= b.id
+                                    INNER JOIN mst_department c ON b.department_id= c.id
+                                    INNER JOIN mst_section d ON b.section_id= d.id
                                     order by a.id desc`;
       return res
         .status(200)
@@ -34,7 +34,7 @@ class UserController {
     const uuid = req.params.uuid;
     try {
 
-      const response = await wip.$queryRaw`
+      const response = await db.$queryRaw`
                                SELECT 
                                     a.id,
                                     a.uuid, 
@@ -45,10 +45,10 @@ class UserController {
                                     c.department_name,
                                     d.section_name,
                                     a.role
-                                FROM wip_mst_user a 
-                                    INNER JOIN wip_mst_employee b ON a.employee_id= b.id
-                                    INNER JOIN wip_mst_department c ON b.department_id= c.id
-                                    INNER JOIN wip_mst_section d ON b.section_id= d.id
+                                FROM mst_user a 
+                                    INNER JOIN mst_employee b ON a.employee_id= b.id
+                                    INNER JOIN mst_department c ON b.department_id= c.id
+                                    INNER JOIN mst_section d ON b.section_id= d.id
                                     WHERE a.uuid::varchar  = ${uuid}`;
       return res
         .status(200)
@@ -74,7 +74,7 @@ class UserController {
     try {
 
       
-      let userCount = await wip.wip_mst_user.count({
+      let userCount = await db.mst_user.count({
         // where: {
         //   username: username,
         // },
@@ -99,7 +99,7 @@ class UserController {
           );
       }
 
-      const response = await wip.wip_mst_user.createMany({
+      const response = await db.mst_user.createMany({
         data: {
           uuid: randomUUID(),
           username: username,
@@ -130,7 +130,7 @@ class UserController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await wip.wip_mst_user.updateMany({
+      const update = await db.mst_user.updateMany({
         where: {
           uuid: uuid,
         },
@@ -160,7 +160,7 @@ class UserController {
   Delete = async (req, res) => {
     const uuid = req.params.uuid;
     try {
-      const deleted = await wip.wip_mst_user.deleteMany({
+      const deleted = await db.mst_user.deleteMany({
         where: {
           uuid: uuid,
         },
@@ -217,7 +217,7 @@ class UserController {
         }
 
 
-        const user = await wip.wip_mst_user.findUnique({
+        const user = await db.mst_user.findUnique({
           where: {
             username: username,
           },
@@ -251,7 +251,7 @@ class UserController {
         }
 
         const date = new Date();
-        const update = await wip.wip_mst_user.updateMany({
+        const update = await db.mst_user.updateMany({
           where: {
             uuid: user.uuid,
           },
@@ -284,4 +284,5 @@ class UserController {
 
 }
 
-export default new UserController();
+const controller = new UserController();
+export const { GetAll, GetById, Create, Update, Delete, UpdatePassword } = controller;

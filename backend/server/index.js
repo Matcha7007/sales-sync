@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from "cors";
-import Router from '../router';
-import { json, urlencoded } from "body-parser";
+import Router from '../router/index.js';
+import pkg from 'body-parser';
+const { json, urlencoded } = pkg;
 import { Server } from "socket.io";
 import { createServer } from "http";
 

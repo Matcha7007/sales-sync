@@ -1,9 +1,9 @@
-import RoleRoutes from './role-route';
-import DepartmentRoutes from './department-route';
-import SectionRoutes from './section-route';
-import EmployeeRoutes from './employee-route';
-import UserRoutes from './user-route';
-import AuthRoutes from './auth-route';
+import RoleRoutes from './role-route.js';
+import DepartmentRoutes from './department-route.js';
+import SectionRoutes from './section-route.js';
+import EmployeeRoutes from './employee-route.js';
+import UserRoutes from './user-route.js';
+import AuthRoutes from './auth-route.js';
 
 export default [
     RoleRoutes,

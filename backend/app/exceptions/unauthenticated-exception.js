@@ -1,4 +1,4 @@
-import BaseException from './base-exception'
+import BaseException from './base-exception.js'
 
 class UnauthenticatedException extends BaseException {
 

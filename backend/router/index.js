@@ -1,5 +1,5 @@
 import { Router as _Router, json } from 'express'
-import apiRoutes from './api'
+import apiRoutes from './api/index.js'
 
 class Router {
 

@@ -1,11 +1,11 @@
-const { wip } = require("../../../db.js").default;
-const response_format = require("../../helpers/response");
-const crypto = require('crypto');
+import db from '../../../db.js';
+import response2 from "../../helpers/response.js";
+import { randomUUID } from 'crypto';
 
 class DepartmentController {
   GetAll = async (req, res) => {
     try {
-      const response = await wip.wip_mst_department.findMany({
+      const response = await db.mst_department.findMany({
         orderBy:{
           id: 'desc'
         }
@@ -13,7 +13,7 @@ class DepartmentController {
       return res
         .status(200)
         .send(
-          response_format.response2(200, true, "list data department", response)
+          response2(200, true, "list data department", response)
         );
     } catch (error) {
       res.status(500).json({ msg: error.message });
@@ -23,9 +23,9 @@ class DepartmentController {
   Create = async (req, res) => {
     const { department_name, user_id } = req.body;
     try {
-      const department = await wip.wip_mst_department.create({
+      const department = await db.mst_department.create({
         data: {
-          uuid: crypto.randomUUID(),
+          uuid: randomUUID(),
           department_name: department_name,
           created_by: user_id,
         },
@@ -34,7 +34,7 @@ class DepartmentController {
       return res
         .status(201)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "create data department successfully",
@@ -51,7 +51,7 @@ class DepartmentController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await wip.wip_mst_department.update({
+      const update = await db.mst_department.update({
         where: {
           uuid: uuid,
         },
@@ -64,7 +64,7 @@ class DepartmentController {
       return res
         .status(200)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "updated data department successfully",
@@ -79,14 +79,14 @@ class DepartmentController {
   Delete = async (req, res) => {
     const uuid = req.params.uuid;
     try {
-        const deleted = await wip.wip_mst_department.delete({
+        const deleted = await db.mst_department.delete({
             where: {
                 uuid: uuid
             }
         });
         return res.status(200)
                 .send(
-                    response_format.response2(
+                    response2(
                     200,
                     true,
                     "deleted data department successfully",
@@ -99,4 +99,5 @@ class DepartmentController {
 
 }
 
-module.exports = new DepartmentController();
+const departmentController = new DepartmentController();
+export const { GetAll, Create, Update, Delete } = departmentController;

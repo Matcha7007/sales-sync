@@ -1,12 +1,13 @@
-const { wip } = require("../../../db.js").default;
-const response_format = require("../../helpers/response");
-const crypto = require('crypto');
-const _ = require('lodash');
+import db from '../../../db.js';
+import response2 from "../../helpers/response.js";
+import { randomUUID } from 'crypto';
+import pkg from 'lodash';
+const { uniqBy, filter, isEmpty } = pkg;
 
 class EmployeeController {
   GetAll = async (req, res) => {
     try {
-      const response = await wip.wip_mst_employee.findMany({
+      const response = await db.mst_employee.findMany({
         select: {
           id: true,
           uuid: true,
@@ -36,7 +37,7 @@ class EmployeeController {
       return res
         .status(200)
         .send(
-          response_format.response2(200, true, "list data employee", response)
+          response2(200, true, "list data employee", response)
         );
     } catch (error) {
       res.status(500).json({ msg: error.message });
@@ -47,14 +48,14 @@ class EmployeeController {
     const uuid = req.params.uuid;
     try {
 
-      const response = await wip.wip_mst_employee.findMany({
+      const response = await db.mst_employee.findMany({
         where: {
           uuid: uuid,
         }});
 
       return res
         .status(200)
-        .send(response_format.response2(200, true, "single data employee", response));
+        .send(response2(200, true, "single data employee", response));
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }
@@ -64,7 +65,7 @@ class EmployeeController {
     const { nsk, name, department_id, section_id, user_id } = req.body;
     try {
 
-      let employeeCount = await wip.wip_mst_employee.count({
+      let employeeCount = await db.mst_employee.count({
         where: {
           nsk: nsk,
         },
@@ -74,7 +75,7 @@ class EmployeeController {
         return res
           .status(409)
           .send(
-            response_format.response2(
+            response2(
               409,
               false,
               "Employee NSK already exist",
@@ -83,9 +84,9 @@ class EmployeeController {
           );
       }
 
-      const employee = await wip.wip_mst_employee.createMany({
+      const employee = await db.mst_employee.createMany({
         data: {
-          uuid: crypto.randomUUID(),
+          uuid: randomUUID(),
           nsk: nsk,
           name: name,
           department_id: department_id,
@@ -97,7 +98,7 @@ class EmployeeController {
       return res
         .status(201)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "create data employee successfully",
@@ -114,7 +115,7 @@ class EmployeeController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await wip.wip_mst_employee.updateMany({
+      const update = await db.mst_employee.updateMany({
         where: {
           uuid: uuid,
         },
@@ -130,7 +131,7 @@ class EmployeeController {
       return res
         .status(200)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "updated data employee successfully",
@@ -146,14 +147,14 @@ class EmployeeController {
     const uuid = req.params.uuid;
     try {
 
-      const employeeCount = await wip.wip_mst_employee.count({
+      const employeeCount = await db.mst_employee.count({
         where: {
           uuid: uuid,
         },
       });
 
       if(employeeCount > 0) {
-        const deleted = await wip.wip_mst_employee.deleteMany({
+        const deleted = await db.mst_employee.deleteMany({
           where: {
             uuid: uuid,
           },
@@ -161,7 +162,7 @@ class EmployeeController {
         return res
           .status(200)
           .send(
-            response_format.response2(
+            response2(
               200,
               true,
               "deleted data employee successfully",
@@ -173,7 +174,7 @@ class EmployeeController {
       return res
           .status(404)
           .send(
-            response_format.response2(
+            response2(
               404,
               false,
               "data employee not found",
@@ -187,7 +188,7 @@ class EmployeeController {
     const nsk = req?.params?.nsk ? Number(req?.params?.nsk):0;
     try {
 
-      let response = await wip.wip_mst_employee.findFirst({
+      let response = await db.mst_employee.findFirst({
         where: {
           nsk: nsk,
         },
@@ -199,7 +200,7 @@ class EmployeeController {
       });
       return res
         .status(200)
-        .send(response_format.response2(200, true, "single data employee", response));
+        .send(response2(200, true, "single data employee", response));
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }
@@ -208,7 +209,7 @@ class EmployeeController {
   GetListEmployeeWithRoleUser = async (req, res) => {
     try {
 
-      const response = await wip.wip_mst_user.findMany({
+      const response = await db.mst_user.findMany({
         select:{
           employee_id:true,
           role:true
@@ -227,9 +228,9 @@ class EmployeeController {
         return acu;
       },[]):[];
 
-      let employee_id_operator_unique = _.uniqBy(employee_id_operator, (v) => [v.employee_id, v.role].join());
+      let employee_id_operator_unique = uniqBy(employee_id_operator, (v) => [v.employee_id, v.role].join());
 
-      let pegawais = await wip.wip_mst_employee.findMany({
+      let pegawais = await db.mst_employee.findMany({
         select: {
           id: true,
           uuid: true,
@@ -258,8 +259,8 @@ class EmployeeController {
       });
 
       let pegawai_with_role = pegawais ? pegawais?.reduce((acu,next)=>{
-        let roles = _.filter(employee_id_operator_unique,{employee_id:next?.id});
-        if(_.isEmpty(roles)){
+        let roles = filter(employee_id_operator_unique,{employee_id:next?.id});
+        if(isEmpty(roles)){
           roles = [];
           next.roles = roles;
         }else{
@@ -272,11 +273,14 @@ class EmployeeController {
 
       return res
         .status(200)
-        .send(response_format.response2(200, true, "get data pegawai operator role", pegawai_with_role));
+        .send(response2(200, true, "get data pegawai operator role", pegawai_with_role));
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }
   };
 }
 
-module.exports = new EmployeeController();
+const controller = new EmployeeController();
+export const { GetAll, 
+  GetListEmployeeWithRoleUser, 
+  GetByNsk, GetById, Create, Update, Delete } = controller;

@@ -1,11 +1,11 @@
-const { wip } = require("../../../db.js").default;
-const response_format = require("../../helpers/response");
-const crypto = require('crypto');
+import db from '../../../db.js';
+import response2 from "../../helpers/response.js";
+import { randomUUID } from 'crypto';
 
 class SectionController {
   GetAll = async (req, res) => {
     try {
-      const response = await wip.wip_mst_section.findMany({
+      const response = await db.mst_section.findMany({
         select: {
           id: true,
           uuid: true,
@@ -28,7 +28,7 @@ class SectionController {
       return res
         .status(200)
         .send(
-          response_format.response2(200, true, "list data section", response)
+          response2(200, true, "list data section", response)
         );
     } catch (error) {
       res.status(500).json({ msg: error.message });
@@ -38,7 +38,7 @@ class SectionController {
   GetById = async (req, res) => {
     const uuid = req.params.uuid;
     try {
-      const response = await wip.wip_mst_section.findMany({
+      const response = await db.mst_section.findMany({
         where: {
           uuid: uuid,
         },
@@ -62,7 +62,7 @@ class SectionController {
       return res
         .status(200)
         .send(
-          response_format.response2(200, true, "single data role", response)
+          response2(200, true, "single data role", response)
         );
     } catch (error) {
       res.status(500).json({ msg: error.message });
@@ -72,9 +72,9 @@ class SectionController {
   Create = async (req, res) => {
     const { section_name, department_id, user_id } = req.body;
     try {
-      const section = await wip.wip_mst_section.create({
+      const section = await db.mst_section.create({
         data: {
-          uuid: crypto.randomUUID(),
+          uuid: randomUUID(),
           section_name: section_name,
           department_id: department_id,
           created_by: user_id,
@@ -84,7 +84,7 @@ class SectionController {
       return res
         .status(201)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "create data section successfully",
@@ -101,7 +101,7 @@ class SectionController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await wip.wip_mst_section.update({
+      const update = await db.mst_section.update({
         where: {
           uuid: uuid,
         },
@@ -115,7 +115,7 @@ class SectionController {
       return res
         .status(200)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "updated data section successfully",
@@ -130,7 +130,7 @@ class SectionController {
   Delete = async (req, res) => {
     const uuid = req.params.uuid;
     try {
-      const deleted = await wip.wip_mst_section.delete({
+      const deleted = await db.mst_section.delete({
         where: {
           uuid: uuid,
         },
@@ -138,7 +138,7 @@ class SectionController {
       return res
         .status(200)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "deleted data section successfully",
@@ -151,4 +151,5 @@ class SectionController {
   };
 }
 
-module.exports = new SectionController();
+const controller = new SectionController();
+export const { GetAll, GetById, Create, Update, Delete } = controller;

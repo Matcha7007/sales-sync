@@ -1,4 +1,13 @@
-require('dotenv').config()
+import dotenv from 'dotenv';
 
-export const appKey = process.env.APP_KEY
-export const tokenExpiresIn = 7600
+dotenv.config();
+
+const appKey = process.env.APP_KEY;
+const tokenExpiresIn = 7600;
+
+const appConfig = {
+  appKey,
+  tokenExpiresIn,
+};
+
+export default appConfig;

@@ -1,18 +1,18 @@
-const { wip } = require("../../../db.js").default;
-const response_format = require("../../helpers/response");
-const crypto = require('crypto');
+import db from '../../../db.js';
+import response2 from "../../helpers/response.js";
+import { randomUUID } from 'crypto';
 
 class RoleController {
   GetAll = async (req, res) => {
     try {
-      const response = await wip.wip_mst_role.findMany({
+      const response = await db.mst_role.findMany({
         orderBy:{
           id:'desc'
         }
       });
       return res
         .status(200)
-        .send(response_format.response2(200, true, "list data role", response));
+        .send(response2(200, true, "list data role", response));
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }
@@ -22,14 +22,14 @@ class RoleController {
     const uuid = req.params.uuid;
     try {
 
-      const response = await wip.wip_mst_role.findMany({
+      const response = await db.mst_role.findMany({
         where: {
           uuid: uuid,
         }});
 
       return res
         .status(200)
-        .send(response_format.response2(200, true, "single data role", response));
+        .send(response2(200, true, "single data role", response));
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }
@@ -38,7 +38,7 @@ class RoleController {
   Create = async (req, res) => {
     const { role_name, description, user_id } = req.body;
     try {
-      let roleCount = await wip.wip_mst_role.count({
+      let roleCount = await db.mst_role.count({
         where: {
           role_name: role_name,
         },
@@ -48,7 +48,7 @@ class RoleController {
         return res
           .status(409)
           .send(
-            response_format.response2(
+            response2(
               409,
               false,
               "Role Name already exist",
@@ -57,9 +57,9 @@ class RoleController {
           );
       }
 
-      const role = await wip.wip_mst_role.createMany({
+      const role = await db.mst_role.createMany({
         data: {
-          uuid: crypto.randomUUID(),
+          uuid: randomUUID(),
           role_name: role_name,
           description: description,
           created_by: user_id,
@@ -69,7 +69,7 @@ class RoleController {
       return res
         .status(201)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "create data role successfully",
@@ -86,7 +86,7 @@ class RoleController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await wip.wip_mst_role.updateMany({
+      const update = await db.mst_role.updateMany({
         where: {
           uuid: uuid,
         },
@@ -100,7 +100,7 @@ class RoleController {
       return res
         .status(200)
         .send(
-          response_format.response2(
+          response2(
             200,
             true,
             "updated data role successfully",
@@ -115,14 +115,14 @@ class RoleController {
   Delete = async (req, res) => {
     const uuid = req.params.uuid;
     try {
-      const roleCount = await wip.wip_mst_role.count({
+      const roleCount = await db.mst_role.count({
         where: {
           uuid: uuid,
         },
       });
 
       if (roleCount > 0) {
-        const deleted = await wip.wip_mst_role.deleteMany({
+        const deleted = await db.mst_role.deleteMany({
           where: {
             uuid: uuid,
           },
@@ -130,7 +130,7 @@ class RoleController {
         return res
           .status(200)
           .send(
-            response_format.response2(
+            response2(
               200,
               true,
               "deleted data role successfully",
@@ -141,7 +141,7 @@ class RoleController {
         return res
           .status(404)
           .send(
-            response_format.response2(
+            response2(
               404,
               false,
               "data role not found",
@@ -153,7 +153,7 @@ class RoleController {
       return res
           .status(404)
           .send(
-            response_format.response2(
+            response2(
               404,
               false,
               "data role not found",
@@ -164,4 +164,6 @@ class RoleController {
   };
 }
 
-module.exports = new RoleController();
+const roleController = new RoleController();
+
+export const { GetAll, GetById, Create, Update, Delete } = roleController;

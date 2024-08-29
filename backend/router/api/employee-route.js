@@ -1,5 +1,9 @@
-import { GetAll, GetListEmployeeWithRoleUser, GetByNsk, GetById, Create, Update, Delete } from '../../app/controllers/api/employee-controller'
-import { auth } from '../../app/middleware/auth'
+import { 
+    GetAll, 
+    GetListEmployeeWithRoleUser, 
+    GetByNsk, GetById, Create, Update, Delete 
+} from '../../app/controllers/api/employee-controller.js'
+import { auth } from '../../app/middleware/auth.js'
 
 
 export const group = {
@@ -42,3 +46,6 @@ export const routes = [
         handler: Delete
     },
 ]
+
+const EmployeeRoutes = { group, routes };
+export default EmployeeRoutes;

@@ -1,5 +1,5 @@
-const { db } = require("../../db.js").default;
-import { InsertLogAktivitas } from '../helpers/log.helper';
+import db from '../../db.js';
+import { InsertLogAktivitas } from '../helpers/log.helper.js';
 
 export async function logMiddleware(req, res, next) {
   try {

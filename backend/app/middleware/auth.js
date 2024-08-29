@@ -1,7 +1,7 @@
-import UnauthenticatedException from '../exceptions/unauthenticated-exception';
-import { verify } from 'jsonwebtoken';
-import { appKey } from '../../config/app';
-const { db } = require("../../db.js").default;
+import UnauthenticatedException from '../exceptions/unauthenticated-exception.js';
+import verify from 'jsonwebtoken';
+import appKey from '../../config/app.js';
+import db from '../../db.js';
 
 
 export async function auth(req, res, next) {

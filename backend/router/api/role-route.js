@@ -1,5 +1,5 @@
-import { GetAll, GetById, Create, Update, Delete } from '../../app/controllers/api/role-controller'
-import { auth } from '../../app/middleware/auth'
+import { GetAll, GetById, Create, Update, Delete } from '../../app/controllers/api/role-controller.js'
+import { auth } from '../../app/middleware/auth.js'
 
 export const group = {
     prefix: '/role',
@@ -32,3 +32,6 @@ export const routes = [
         handler: Delete
     },
 ]
+
+const RoleRoutes = { group, routes };
+export default RoleRoutes;

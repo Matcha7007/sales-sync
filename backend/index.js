@@ -1,4 +1,4 @@
-import Server from './server'
+import Server from './server/index.js'
 
 const port = 8003
 
