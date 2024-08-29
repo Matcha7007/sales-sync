@@ -1,0 +1,40 @@
+{
+  "name": "sales-sync-be",
+  "version": "1.0.0",
+  "description": "Sales and Operations Management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
+    "devStart": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Matcha7007/sales-sync.git"
+  },
+  "author": "ilham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Matcha7007/sales-sync/issues"
+  },
+  "homepage": "https://github.com/Matcha7007/sales-sync#readme",
+  "dependencies": {
+    "@prisma/client": "^5.19.0",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.12",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "prisma": "^5.19.0"
+  }
+}
