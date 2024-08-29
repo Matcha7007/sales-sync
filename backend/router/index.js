@@ -30,7 +30,7 @@ class Router {
             res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
             res.header('X-Frame-Options', 'SAMEORIGIN');
             res.removeHeader("X-Powered-By");
-            res.send(`WELCOME TO SUMITOMO-WIP-BE`);
+            res.send(`Sales Sync`);
         });
 
         app.use(this.router)
