@@ -9,8 +9,10 @@ import SupplierRoutes from './supplier-route.js';
 import CustomerRoutes from './customer-route.js';
 import PaymentTypeRoutes from './payment-type-route.js';
 import InventoryTypeRoutes from './inventory-type-route.js';
+import CategoryRoutes from './category-route.js';
 
 export default [
+    CategoryRoutes,
     UomRoutes,
     SupplierRoutes,
     CustomerRoutes,

@@ -22,6 +22,7 @@ model mst_user {
   modified_on DateTime? @default(now())
   created_by  Int?
   modified_by Int?
+  email       String?   @db.VarChar(50)
 }
 
 model mst_role {
@@ -190,7 +191,6 @@ model mst_category {
   id          Int        @id @default(autoincrement())
   uuid        String     @unique @db.Uuid
   name        String     @db.VarChar(100)
-  code        String     @db.VarChar(1)
   description String     @db.VarChar(250)
   created_on  DateTime?  @default(now())
   modified_on DateTime?  @default(now())
@@ -226,6 +226,7 @@ model tr_sale {
   total_amount     Decimal           @db.Money
   is_dp            Boolean           @default(false) @db.Boolean
   dp_amount        Decimal           @default(0) @db.Money
+  is_settled       Boolean           @default(true) @db.Boolean
   created_on       DateTime?         @default(now())
   modified_on      DateTime?         @default(now())
   created_by       Int?
@@ -263,6 +264,7 @@ model tr_purchase {
   total_amount       Decimal              @db.Money
   is_dp              Boolean              @default(false) @db.Boolean
   dp_amount          Decimal              @default(0) @db.Money
+  is_settled         Boolean              @default(true) @db.Boolean
   created_on         DateTime?            @default(now())
   modified_on        DateTime?            @default(now())
   created_by         Int?
