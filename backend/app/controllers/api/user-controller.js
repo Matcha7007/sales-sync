@@ -1,5 +1,6 @@
 import db from '../../../db.js';
-import response2 from "../../helpers/response.js";
+import responseHelpers from "../../helpers/response.js";
+const { response2 } = responseHelpers;
 import { hashSync } from "bcrypt";
 import { randomUUID } from 'crypto';
 import { isPasswordAMatch } from "../../helpers/auth.js";

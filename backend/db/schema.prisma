@@ -10,33 +10,30 @@ datasource db {
 }
 
 model mst_user {
-  id           Int           @id @default(autoincrement())
-  uuid         String        @unique @db.Uuid
-  username     String        @unique @db.VarChar(50)
-  password     String        @db.VarChar(250)
-  employee_id  Int?
-  role         Json?
-  role_id      Int?
-  is_active    Boolean       @default(true) @db.Boolean
-  created_on   DateTime?     @default(now())
-  modified_on  DateTime?     @default(now())
-  created_by   Int?
-  modified_by  Int?
-  mst_role     mst_role?     @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mst_employee mst_employee? @relation(fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @db.Uuid
+  username    String    @unique @db.VarChar(50)
+  password    String    @db.VarChar(250)
+  employee_id Int?
+  role        Json?
+  role_id     Int?
+  is_active   Boolean   @default(true) @db.Boolean
+  created_on  DateTime? @default(now())
+  modified_on DateTime? @default(now())
+  created_by  Int?
+  modified_by Int?
 }
 
 model mst_role {
-  id          Int        @id @default(autoincrement())
-  uuid        String     @unique @db.Uuid
-  role_name   String     @db.VarChar(100)
-  created_on  DateTime?  @default(now())
-  modified_on DateTime?  @default(now())
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @db.Uuid
+  role_name   String    @db.VarChar(100)
+  created_on  DateTime? @default(now())
+  modified_on DateTime? @default(now())
   created_by  Int?
   modified_by Int?
-  description String     @db.VarChar(250)
-  is_active   Boolean    @default(true) @db.Boolean
-  mst_user    mst_user[]
+  description String    @db.VarChar(250)
+  is_active   Boolean   @default(true) @db.Boolean
 }
 
 model mst_department {
@@ -70,7 +67,6 @@ model log_activity {
 model mst_employee {
   id             Int             @id @default(autoincrement())
   uuid           String          @unique @db.Uuid
-  nsk            Int
   name           String          @db.VarChar(100)
   address        String          @db.VarChar(250)
   phone          String          @db.VarChar(15)
@@ -85,7 +81,6 @@ model mst_employee {
   section        String?         @db.VarChar(255)
   mst_department mst_department? @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   mst_section    mst_section?    @relation(fields: [section_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mst_user       mst_user[]
 }
 
 model mst_customer {
@@ -182,10 +177,10 @@ model mst_category {
 }
 
 model tr_invetory {
-  id           Int           @id @default(autoincrement())
-  uuid         String        @unique @db.Uuid
-  item_id      Int?
-  category_id  Int?
+  // id           Int           @id @default(autoincrement())
+  id           String        @id @default(uuid()) @db.Uuid
+  item_id      String        @db.Uuid
+  category_id  String        @db.Uuid
   quantity     BigInt?       @default(0) @db.BigInt
   description  String        @db.VarChar(250)
   date         DateTime?     @default(now())
@@ -194,16 +189,15 @@ model tr_invetory {
   created_by   Int?
   modified_by  Int?
   is_active    Boolean       @default(true) @db.Boolean
-  mst_item     mst_item?     @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mst_category mst_category? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  mst_item     mst_item?     @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_category mst_category? @relation(fields: [category_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model tr_sale {
-  id             Int              @id @default(autoincrement())
-  uuid           String           @unique @db.Uuid
-  item_id        Int?
-  category_id    Int?
-  customer_id    Int?
+  id             String           @id @default(uuid()) @db.Uuid
+  item_id        String           @db.Uuid
+  category_id    String           @db.Uuid
+  customer_id    String           @db.Uuid
   quantity       BigInt?          @default(0) @db.BigInt
   price_of_unit  Decimal          @db.Money
   total_amount   Decimal          @db.Money
@@ -214,18 +208,17 @@ model tr_sale {
   created_by     Int?
   modified_by    Int?
   is_active      Boolean          @default(true) @db.Boolean
-  mst_item       mst_item?        @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mst_category   mst_category?    @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mst_customer   mst_customer?    @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  mst_item       mst_item?        @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_category   mst_category?    @relation(fields: [category_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_customer   mst_customer?    @relation(fields: [customer_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
   tr_sale_detail tr_sale_detail[]
 }
 
 model tr_sale_detail {
-  id                 Int       @id @default(autoincrement())
-  uuid               String    @unique @db.Uuid
+  id                 String    @id @default(uuid()) @db.Uuid
   sale_no            String    @db.VarChar(20)
   sequence           Int?      @default(1) @db.Integer
-  sale_id            Int?
+  sale_id            String    @db.Uuid
   outstanding_amount Decimal   @db.Money
   description        String    @db.VarChar(250)
   date               DateTime? @default(now())
@@ -238,11 +231,10 @@ model tr_sale_detail {
 }
 
 model tr_purchase {
-  id                 Int                  @id @default(autoincrement())
-  uuid               String               @unique @db.Uuid
-  item_id            Int?
-  category_id        Int?
-  supplier_id        Int?
+  id                 String               @id @default(uuid()) @db.Uuid
+  item_id            String               @db.Uuid
+  category_id        String               @db.Uuid
+  supplier_id        String               @db.Uuid
   quantity           BigInt?              @default(0) @db.BigInt
   price_of_unit      Decimal              @db.Money
   total_amount       Decimal              @db.Money
@@ -253,18 +245,17 @@ model tr_purchase {
   created_by         Int?
   modified_by        Int?
   is_active          Boolean              @default(true) @db.Boolean
-  mst_item           mst_item?            @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mst_category       mst_category?        @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mst_supplier       mst_supplier?        @relation(fields: [supplier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  mst_item           mst_item?            @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_category       mst_category?        @relation(fields: [category_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_supplier       mst_supplier?        @relation(fields: [supplier_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
   tr_purchase_detail tr_purchase_detail[]
 }
 
 model tr_purchase_detail {
-  id                 Int          @id @default(autoincrement())
-  uuid               String       @unique @db.Uuid
+  id                 String       @id @default(uuid()) @db.Uuid
   purchase_no        String       @db.VarChar(20)
   sequence           Int?         @default(1) @db.Integer
-  sale_id            Int?
+  sale_id            String       @db.Uuid
   outstanding_amount Decimal      @db.Money
   description        String       @db.VarChar(250)
   date               DateTime?    @default(now())

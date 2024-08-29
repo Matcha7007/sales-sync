@@ -1,5 +1,6 @@
 import db from '../../../db.js';
-import response2 from "../../helpers/response.js";
+import responseHelpers from "../../helpers/response.js";
+const { response2 } = responseHelpers;
 import { randomUUID } from 'crypto';
 import pkg from 'lodash';
 const { uniqBy, filter, isEmpty } = pkg;
@@ -62,33 +63,15 @@ class EmployeeController {
   };
 
   Create = async (req, res) => {
-    const { nsk, name, department_id, section_id, user_id } = req.body;
+    const { name, address, phone, department_id, section_id, user_id } = req.body;
     try {
-
-      let employeeCount = await db.mst_employee.count({
-        where: {
-          nsk: nsk,
-        },
-      });
-
-      if (employeeCount > 0) {
-        return res
-          .status(409)
-          .send(
-            response2(
-              409,
-              false,
-              "Employee NSK already exist",
-              employeeCount
-            )
-          );
-      }
 
       const employee = await db.mst_employee.createMany({
         data: {
           uuid: randomUUID(),
-          nsk: nsk,
           name: name,
+          address: address,
+          phone: phone,
           department_id: department_id,
           section_id: section_id,
           created_by: user_id,
@@ -111,7 +94,7 @@ class EmployeeController {
   };
 
   Update = async (req, res) => {
-    const { nsk, name, department_id, section_id, user_id } = req.body;
+    const { name, address, phone, section_id, user_id } = req.body;
     const uuid = req.params.uuid;
     const date = new Date();
     try {
@@ -120,9 +103,9 @@ class EmployeeController {
           uuid: uuid,
         },
         data: {
-          nsk: nsk,
           name: name,
-          department_id:department_id,
+          address: address,
+          phone: phone,
           section_id:section_id,
           modified_by: user_id,
           modified_on: date,

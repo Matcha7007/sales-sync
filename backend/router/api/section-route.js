@@ -5,7 +5,7 @@ import { logMiddleware } from '../../app/middleware/logaktivitas.js'
 
 export const group = {
     prefix: '/section',
-    middleware: [auth, logMiddleware]
+    // middleware: [auth, logMiddleware]
 }
 export const routes = [
     {
