@@ -1,12 +1,15 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class DepartmentController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_department.findMany({
+        where: {
+          is_active: true
+        },
         orderBy:{
           id: 'desc'
         }
@@ -24,7 +27,7 @@ class DepartmentController {
   Create = async (req, res) => {
     const { department_name, user_id } = req.body;
     try {
-      const department = await db.mst_department.create({
+      await db.mst_department.create({
         data: {
           uuid: randomUUID(),
           department_name: department_name,
@@ -35,11 +38,10 @@ class DepartmentController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data department successfully",
-            department
+            "create data department successfully"
           )
         );
     } catch (error) {
@@ -52,7 +54,7 @@ class DepartmentController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_department.update({
+      await db.mst_department.update({
         where: {
           uuid: uuid,
         },
@@ -65,11 +67,10 @@ class DepartmentController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data department successfully",
-            update
+            "updated data department successfully"
           )
         );
     } catch (error) {
@@ -78,20 +79,26 @@ class DepartmentController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
-        const deleted = await db.mst_department.delete({
-            where: {
-                uuid: uuid
-            }
+        await db.mst_department.update({
+          where: {
+            uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
+          },
         });
         return res.status(200)
                 .send(
-                    response2(
+                    response3(
                     200,
                     true,
-                    "deleted data department successfully",
-                    deleted)
+                    "deleted data department successfully")
                 );
     } catch (error) {
         res.status(500).json({msg: error.message});

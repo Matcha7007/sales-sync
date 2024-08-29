@@ -1,12 +1,15 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class CustomerController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_customer.findMany({
+        where: {
+          is_active: true
+        },
         select: {
           id: true,
           uuid: true,
@@ -49,7 +52,7 @@ class CustomerController {
     const { name, address, phone, user_id } = req.body;
     try {
 
-      const customer = await db.mst_customer.createMany({
+      await db.mst_customer.createMany({
         data: {
           uuid: randomUUID(),
           name: name,
@@ -62,11 +65,10 @@ class CustomerController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data customer successfully",
-            customer
+            "create data customer successfully"
           )
         );
     } catch (error) {
@@ -79,7 +81,7 @@ class CustomerController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_customer.updateMany({
+      await db.mst_customer.updateMany({
         where: {
           uuid: uuid,
         },
@@ -94,11 +96,10 @@ class CustomerController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data customer successfully",
-            update
+            "updated data customer successfully"
           )
         );
     } catch (error) {
@@ -107,7 +108,9 @@ class CustomerController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
 
       const customerCount = await db.mst_customer.count({
@@ -117,19 +120,23 @@ class CustomerController {
       });
 
       if(customerCount > 0) {
-        const deleted = await db.mst_customer.deleteMany({
+        await db.mst_customer.updateMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data customer successfully",
-              deleted
+              "deleted data customer successfully"
             )
           );
       }
@@ -137,11 +144,10 @@ class CustomerController {
       return res
           .status(404)
           .send(
-            response2(
+            response3(
               404,
               false,
-              "data customer not found",
-              0
+              "data customer not found"
             )
           );
     }

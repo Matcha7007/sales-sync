@@ -1,12 +1,15 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class InventoryTypeController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_inventory_type.findMany({
+        where: {
+          is_active: true
+        },
         select: {
           id: true,
           uuid: true,
@@ -48,7 +51,7 @@ class InventoryTypeController {
     const { name, description, user_id } = req.body;
     try {
 
-      const inventoryType = await db.mst_inventory_type.createMany({
+      await db.mst_inventory_type.createMany({
         data: {
           uuid: randomUUID(),
           name: name,
@@ -60,11 +63,10 @@ class InventoryTypeController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data inventory type successfully",
-            inventoryType
+            "create data inventory type successfully"
           )
         );
     } catch (error) {
@@ -77,7 +79,7 @@ class InventoryTypeController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_inventory_type.updateMany({
+      await db.mst_inventory_type.updateMany({
         where: {
           uuid: uuid,
         },
@@ -91,11 +93,10 @@ class InventoryTypeController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data inventory type successfully",
-            update
+            "updated data inventory type successfully"
           )
         );
     } catch (error) {
@@ -104,7 +105,9 @@ class InventoryTypeController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
 
       const inventoryTypeCount = await db.mst_inventory_type.count({
@@ -114,19 +117,23 @@ class InventoryTypeController {
       });
 
       if(inventoryTypeCount > 0) {
-        const deleted = await db.mst_inventory_type.deleteMany({
+        await db.mst_inventory_type.deleteMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data inventory type successfully",
-              deleted
+              "deleted data inventory type successfully"
             )
           );
       }
@@ -137,8 +144,7 @@ class InventoryTypeController {
             response2(
               404,
               false,
-              "data inventory type not found",
-              0
+              "data inventory type not found"
             )
           );
     }

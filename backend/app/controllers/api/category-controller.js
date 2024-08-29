@@ -1,12 +1,15 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class CategoryController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_category.findMany({
+        where: {
+          is_active: true
+        },
         select: {
           id: true,
           uuid: true,
@@ -48,7 +51,7 @@ class CategoryController {
     const { name, description, user_id } = req.body;
     try {
 
-      const category = await db.mst_category.createMany({
+      await db.mst_category.createMany({
         data: {
           uuid: randomUUID(),
           name: name,
@@ -60,11 +63,10 @@ class CategoryController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data category successfully",
-            category
+            "create data category successfully"
           )
         );
     } catch (error) {
@@ -77,7 +79,7 @@ class CategoryController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_category.updateMany({
+      await db.mst_category.updateMany({
         where: {
           uuid: uuid,
         },
@@ -91,11 +93,10 @@ class CategoryController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data category successfully",
-            update
+            "updated data category successfully"
           )
         );
     } catch (error) {
@@ -104,7 +105,9 @@ class CategoryController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
 
       const categoryCount = await db.mst_category.count({
@@ -114,19 +117,23 @@ class CategoryController {
       });
 
       if(categoryCount > 0) {
-        const deleted = await db.mst_category.deleteMany({
+        await db.mst_category.updateMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data category successfully",
-              deleted
+              "deleted data category successfully"
             )
           );
       }
@@ -134,11 +141,10 @@ class CategoryController {
       return res
           .status(404)
           .send(
-            response2(
+            response3(
               404,
               false,
-              "data category not found",
-              0
+              "data category not found"
             )
           );
     }

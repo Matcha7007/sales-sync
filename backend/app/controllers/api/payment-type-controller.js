@@ -1,12 +1,15 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class PaymentTypeController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_payment_type.findMany({
+        where: {
+          is_active: true
+        },
         select: {
           id: true,
           uuid: true,
@@ -60,11 +63,10 @@ class PaymentTypeController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data payment type successfully",
-            paymentType
+            "create data payment type successfully"
           )
         );
     } catch (error) {
@@ -77,7 +79,7 @@ class PaymentTypeController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_payment_type.updateMany({
+      await db.mst_payment_type.updateMany({
         where: {
           uuid: uuid,
         },
@@ -91,11 +93,10 @@ class PaymentTypeController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data payment type successfully",
-            update
+            "updated data payment type successfully"
           )
         );
     } catch (error) {
@@ -104,7 +105,9 @@ class PaymentTypeController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
 
       const paymentTypeCount = await db.mst_payment_type.count({
@@ -114,19 +117,23 @@ class PaymentTypeController {
       });
 
       if(paymentTypeCount > 0) {
-        const deleted = await db.mst_payment_type.deleteMany({
+        await db.mst_payment_type.deleteMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data payment type successfully",
-              deleted
+              "deleted data payment type successfully"
             )
           );
       }
@@ -137,8 +144,7 @@ class PaymentTypeController {
             response2(
               404,
               false,
-              "data payment type not found",
-              0
+              "data payment type not found"
             )
           );
     }

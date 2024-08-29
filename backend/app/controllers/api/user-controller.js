@@ -1,6 +1,6 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { hashSync } from "bcrypt";
 import { randomUUID } from 'crypto';
 import { isPasswordAMatch } from "../../helpers/auth.js";
@@ -91,16 +91,15 @@ class UserController {
         return res
           .status(409)
           .send(
-            response2(
+            response3(
               409,
               false,
-              "Username  or employee id already exist",
-              userCount
+              "Username  or employee id already exist"
             )
           );
       }
 
-      const response = await db.mst_user.createMany({
+      await db.mst_user.createMany({
         data: {
           uuid: randomUUID(),
           username: username,
@@ -114,11 +113,10 @@ class UserController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data user successfully",
-            response
+            "create data user successfully"
           )
         );
     } catch (error) {
@@ -131,7 +129,7 @@ class UserController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_user.updateMany({
+      await db.mst_user.updateMany({
         where: {
           uuid: uuid,
         },
@@ -146,11 +144,10 @@ class UserController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data user successfully",
-            update
+            "updated data user successfully"
           )
         );
     } catch (error) {
@@ -159,21 +156,27 @@ class UserController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
-      const deleted = await db.mst_user.deleteMany({
+      await db.mst_user.deleteMany({
         where: {
           uuid: uuid,
+        },
+        data: {
+          is_active: false,
+          modified_by: user_id,
+          modified_on: date,
         },
       });
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "deleted data user successfully",
-            deleted
+            "deleted data user successfully"
           )
         );
     } catch (error) {
@@ -195,11 +198,10 @@ class UserController {
           return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               false,
-              "cannot input old password with spaces",
-              ""
+              "cannot input old password with spaces"
             )
           );
         }
@@ -208,11 +210,10 @@ class UserController {
           return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               false,
-              "cannot input new password with spaces",
-              ""
+              "cannot input new password with spaces"
             )
           );
         }
@@ -229,11 +230,10 @@ class UserController {
           return res
           .status(409)
           .send(
-            response2(
+            response3(
               409,
               false,
-              "username " + username + " not found!",
-              ""
+              "username " + username + " not found!"
             )
           );
         }
@@ -242,17 +242,16 @@ class UserController {
           return res
           .status(409)
           .send(
-            response2(
+            response3(
               409,
               false,
-              "Old password not match or wrong!",
-              ""
+              "Old password not match or wrong!"
             )
           );
         }
 
         const date = new Date();
-        const update = await db.mst_user.updateMany({
+        await db.mst_user.updateMany({
           where: {
             uuid: user.uuid,
           },
@@ -267,11 +266,10 @@ class UserController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "update password user successfully",
-            ""
+            "update password user successfully"
           )
         );
     } catch (error) {

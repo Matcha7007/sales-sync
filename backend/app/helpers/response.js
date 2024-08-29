@@ -25,18 +25,21 @@ function response1(code, success, message, length, currentPage, totalPages, tota
 
 function response2(code, success, message, data) {
 
-    var today = new Date();
-    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    var dateTime = date+' '+time;
-
     const response = {
-        "version": "1.0.0",
-        "datetime": dateTime,
         "code": code,
         "success": success,
         "message": message,
         "data": data
+    };
+
+    return response;
+}
+
+function response3(code, success, message) {
+    const response = {
+        "code": code,
+        "success": success,
+        "message": message
     };
 
     return response;
@@ -63,4 +66,4 @@ function paginationResponse (code, success, message, data) {
     return response
   }
 
-export default {response1,response2,paginationResponse};
+export default {response1, response2, response3, paginationResponse};

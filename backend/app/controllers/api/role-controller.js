@@ -1,12 +1,21 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class RoleController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_role.findMany({
+        where: {
+          is_active: true
+        },
+        select: {
+          id: true,
+          uuid: true,
+          role_name: true,
+          description: true
+        },
         orderBy:{
           id:'desc'
         }
@@ -49,16 +58,15 @@ class RoleController {
         return res
           .status(409)
           .send(
-            response2(
+            response3(
               409,
               false,
-              "Role Name already exist",
-              roleCount
+              "Role Name already exist"
             )
           );
       }
 
-      const role = await db.mst_role.createMany({
+      await db.mst_role.createMany({
         data: {
           uuid: randomUUID(),
           role_name: role_name,
@@ -70,11 +78,10 @@ class RoleController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data role successfully",
-            role
+            "create data role successfully"
           )
         );
     } catch (error) {
@@ -87,7 +94,7 @@ class RoleController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_role.updateMany({
+      await db.mst_role.updateMany({
         where: {
           uuid: uuid,
         },
@@ -101,11 +108,10 @@ class RoleController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data role successfully",
-            update
+            "updated data role successfully"
           )
         );
     } catch (error) {
@@ -114,7 +120,9 @@ class RoleController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
       const roleCount = await db.mst_role.count({
         where: {
@@ -123,30 +131,33 @@ class RoleController {
       });
 
       if (roleCount > 0) {
-        const deleted = await db.mst_role.deleteMany({
+        await db.mst_role.deleteMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data role successfully",
-              deleted
+              "deleted data role successfully"
             )
           );
       } else {
         return res
           .status(404)
           .send(
-            response2(
+            response3(
               404,
               false,
-              "data role not found",
-              roleCount
+              "data role not found"
             )
           );
       }
@@ -154,11 +165,10 @@ class RoleController {
       return res
           .status(404)
           .send(
-            response2(
+            response3(
               404,
               false,
-              "data role not found",
-              0
+              "data role not found"
             )
           );
     }

@@ -1,12 +1,15 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class UomController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_uom.findMany({
+        where: {
+          is_active: true
+        },
         select: {
           id: true,
           uuid: true,
@@ -48,7 +51,7 @@ class UomController {
     const { name, description, user_id } = req.body;
     try {
 
-      const uom = await db.mst_uom.createMany({
+      await db.mst_uom.createMany({
         data: {
           uuid: randomUUID(),
           name: name,
@@ -60,11 +63,10 @@ class UomController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data uom successfully",
-            uom
+            "create data uom successfully"
           )
         );
     } catch (error) {
@@ -77,7 +79,7 @@ class UomController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_uom.updateMany({
+      await db.mst_uom.updateMany({
         where: {
           uuid: uuid,
         },
@@ -91,11 +93,10 @@ class UomController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data uom successfully",
-            update
+            "updated data uom successfully"
           )
         );
     } catch (error) {
@@ -104,7 +105,9 @@ class UomController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
 
       const uomCount = await db.mst_uom.count({
@@ -114,19 +117,23 @@ class UomController {
       });
 
       if(uomCount > 0) {
-        const deleted = await db.mst_uom.deleteMany({
+        await db.mst_uom.deleteMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data uom successfully",
-              deleted
+              "deleted data uom successfully"
             )
           );
       }
@@ -137,8 +144,7 @@ class UomController {
             response2(
               404,
               false,
-              "data uom not found",
-              0
+              "data uom not found"
             )
           );
     }

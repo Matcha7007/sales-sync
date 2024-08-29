@@ -1,12 +1,15 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 
 class SupplierController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_supplier.findMany({
+        where: {
+          is_active: true
+        },
         select: {
           id: true,
           uuid: true,
@@ -49,7 +52,7 @@ class SupplierController {
     const { name, address, phone, user_id } = req.body;
     try {
 
-      const supplier = await db.mst_supplier.createMany({
+      await db.mst_supplier.createMany({
         data: {
           uuid: randomUUID(),
           name: name,
@@ -62,11 +65,10 @@ class SupplierController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data supplier successfully",
-            supplier
+            "create data supplier successfully"
           )
         );
     } catch (error) {
@@ -79,7 +81,7 @@ class SupplierController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_supplier.updateMany({
+      await db.mst_supplier.updateMany({
         where: {
           uuid: uuid,
         },
@@ -94,11 +96,10 @@ class SupplierController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data supplier successfully",
-            update
+            "updated data supplier successfully"
           )
         );
     } catch (error) {
@@ -107,7 +108,9 @@ class SupplierController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
 
       const supplierCount = await db.mst_supplier.count({
@@ -117,19 +120,23 @@ class SupplierController {
       });
 
       if(supplierCount > 0) {
-        const deleted = await db.mst_supplier.deleteMany({
+        await db.mst_supplier.deleteMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data supplier successfully",
-              deleted
+              "deleted data supplier successfully"
             )
           );
       }
@@ -140,8 +147,7 @@ class SupplierController {
             response2(
               404,
               false,
-              "data supplier not found",
-              0
+              "data supplier not found"
             )
           );
     }

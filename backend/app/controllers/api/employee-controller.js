@@ -1,6 +1,6 @@
 import db from '../../../db.js';
 import responseHelpers from "../../helpers/response.js";
-const { response2 } = responseHelpers;
+const { response2, response3 } = responseHelpers;
 import { randomUUID } from 'crypto';
 import pkg from 'lodash';
 const { uniqBy, filter, isEmpty } = pkg;
@@ -9,6 +9,9 @@ class EmployeeController {
   GetAll = async (req, res) => {
     try {
       const response = await db.mst_employee.findMany({
+        where: {
+          is_active: true
+        },
         select: {
           id: true,
           uuid: true,
@@ -63,7 +66,7 @@ class EmployeeController {
     const { name, address, phone, department_id, section_id, user_id } = req.body;
     try {
 
-      const employee = await db.mst_employee.createMany({
+      await db.mst_employee.createMany({
         data: {
           uuid: randomUUID(),
           name: name,
@@ -78,11 +81,10 @@ class EmployeeController {
       return res
         .status(201)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "create data employee successfully",
-            employee
+            "create data employee successfully"
           )
         );
     } catch (error) {
@@ -95,7 +97,7 @@ class EmployeeController {
     const uuid = req.params.uuid;
     const date = new Date();
     try {
-      const update = await db.mst_employee.updateMany({
+      await db.mst_employee.updateMany({
         where: {
           uuid: uuid,
         },
@@ -111,11 +113,10 @@ class EmployeeController {
       return res
         .status(200)
         .send(
-          response2(
+          response3(
             200,
             true,
-            "updated data employee successfully",
-            update
+            "updated data employee successfully"
           )
         );
     } catch (error) {
@@ -124,7 +125,9 @@ class EmployeeController {
   };
 
   Delete = async (req, res) => {
+    const { user_id } = req.body;
     const uuid = req.params.uuid;
+    const date = new Date();
     try {
 
       const employeeCount = await db.mst_employee.count({
@@ -134,19 +137,23 @@ class EmployeeController {
       });
 
       if(employeeCount > 0) {
-        const deleted = await db.mst_employee.deleteMany({
+        await db.mst_employee.deleteMany({
           where: {
             uuid: uuid,
+          },
+          data: {
+            is_active: false,
+            modified_by: user_id,
+            modified_on: date,
           },
         });
         return res
           .status(200)
           .send(
-            response2(
+            response3(
               200,
               true,
-              "deleted data employee successfully",
-              deleted
+              "deleted data employee successfully"
             )
           );
       }
@@ -157,8 +164,7 @@ class EmployeeController {
             response2(
               404,
               false,
-              "data employee not found",
-              0
+              "data employee not found"
             )
           );
     }
