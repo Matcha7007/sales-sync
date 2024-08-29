@@ -12,24 +12,21 @@ class EmployeeController {
         select: {
           id: true,
           uuid: true,
-          nsk: true,
           name: true,
+          address: true,
+          phone: true,
           department: true,
           section: true,
-          wip_mst_department: {
+          mst_department: {
             select : {
               department_name: true,
             }
           },
-          wip_mst_section: {
+          mst_section: {
             select : {
               section_name: true,
             }
           },
-          created_on: true,
-          modified_on: true,
-          created_by: true,
-          modified_by: true,
         },
         orderBy:{
           id: "desc"
@@ -176,9 +173,9 @@ class EmployeeController {
           nsk: nsk,
         },
         include:{
-          wip_mst_department:true,
-          wip_mst_section:true,
-          wip_mst_employee_shift:true
+          mst_department:true,
+          mst_section:true,
+          mst_employee_shift:true
         }    
       });
       return res
@@ -221,12 +218,12 @@ class EmployeeController {
           name: true,
           department: true,
           section: true,
-          wip_mst_department: {
+          mst_department: {
             select : {
               department_name: true,
             }
           },
-          wip_mst_section: {
+          mst_section: {
             select : {
               section_name: true,
             }
