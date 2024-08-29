@@ -138,6 +138,33 @@ model mst_uom {
   mst_item    mst_item[]
 }
 
+model mst_payment_type {
+  id          Int           @id @default(autoincrement())
+  uuid        String        @unique @db.Uuid
+  name        String        @db.VarChar(100)
+  description String        @db.VarChar(250)
+  created_on  DateTime?     @default(now())
+  modified_on DateTime?     @default(now())
+  created_by  Int?
+  modified_by Int?
+  is_active   Boolean       @default(true) @db.Boolean
+  tr_sale     tr_sale[]
+  tr_purchase tr_purchase[]
+}
+
+model mst_inventory_type {
+  id          Int           @id @default(autoincrement())
+  uuid        String        @unique @db.Uuid
+  name        String        @db.VarChar(100)
+  description String        @db.VarChar(250)
+  created_on  DateTime?     @default(now())
+  modified_on DateTime?     @default(now())
+  created_by  Int?
+  modified_by Int?
+  is_active   Boolean       @default(true) @db.Boolean
+  tr_invetory tr_invetory[]
+}
+
 model mst_item {
   id             Int           @id @default(autoincrement())
   uuid           String        @unique @db.Uuid
@@ -160,58 +187,54 @@ model mst_item {
 }
 
 model mst_category {
-  id          Int           @id @default(autoincrement())
-  uuid        String        @unique @db.Uuid
-  name        String        @db.VarChar(100)
-  code        String        @db.VarChar(1)
-  description String        @db.VarChar(250)
-  created_on  DateTime?     @default(now())
-  modified_on DateTime?     @default(now())
+  id          Int        @id @default(autoincrement())
+  uuid        String     @unique @db.Uuid
+  name        String     @db.VarChar(100)
+  code        String     @db.VarChar(1)
+  description String     @db.VarChar(250)
+  created_on  DateTime?  @default(now())
+  modified_on DateTime?  @default(now())
   created_by  Int?
   modified_by Int?
-  is_active   Boolean       @default(true) @db.Boolean
+  is_active   Boolean    @default(true) @db.Boolean
   mst_item    mst_item[]
-  tr_invetory tr_invetory[]
-  tr_sale     tr_sale[]
-  tr_purchase tr_purchase[]
 }
 
 model tr_invetory {
-  // id           Int           @id @default(autoincrement())
-  id           String        @id @default(uuid()) @db.Uuid
-  item_id      String        @db.Uuid
-  category_id  String        @db.Uuid
-  quantity     BigInt?       @default(0) @db.BigInt
-  description  String        @db.VarChar(250)
-  date         DateTime?     @default(now())
-  created_on   DateTime?     @default(now())
-  modified_on  DateTime?     @default(now())
-  created_by   Int?
-  modified_by  Int?
-  is_active    Boolean       @default(true) @db.Boolean
-  mst_item     mst_item?     @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  mst_category mst_category? @relation(fields: [category_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  id                 String              @id @default(uuid()) @db.Uuid
+  item_id            String              @db.Uuid
+  inventory_type_id  String              @db.Uuid
+  quantity           BigInt?             @default(0) @db.BigInt
+  description        String              @db.VarChar(250)
+  date               DateTime?           @default(now())
+  created_on         DateTime?           @default(now())
+  modified_on        DateTime?           @default(now())
+  created_by         Int?
+  modified_by        Int?
+  is_active          Boolean             @default(true) @db.Boolean
+  mst_item           mst_item?           @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_inventory_type mst_inventory_type? @relation(fields: [inventory_type_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model tr_sale {
-  id             String           @id @default(uuid()) @db.Uuid
-  item_id        String           @db.Uuid
-  category_id    String           @db.Uuid
-  customer_id    String           @db.Uuid
-  quantity       BigInt?          @default(0) @db.BigInt
-  price_of_unit  Decimal          @db.Money
-  total_amount   Decimal          @db.Money
-  is_dp          Boolean          @default(false) @db.Boolean
-  dp_amount      Decimal          @default(0) @db.Money
-  created_on     DateTime?        @default(now())
-  modified_on    DateTime?        @default(now())
-  created_by     Int?
-  modified_by    Int?
-  is_active      Boolean          @default(true) @db.Boolean
-  mst_item       mst_item?        @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  mst_category   mst_category?    @relation(fields: [category_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  mst_customer   mst_customer?    @relation(fields: [customer_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  tr_sale_detail tr_sale_detail[]
+  id               String            @id @default(uuid()) @db.Uuid
+  item_id          String            @db.Uuid
+  payment_type_id  String            @db.Uuid
+  customer_id      String            @db.Uuid
+  quantity         BigInt?           @default(0) @db.BigInt
+  price_of_unit    Decimal           @db.Money
+  total_amount     Decimal           @db.Money
+  is_dp            Boolean           @default(false) @db.Boolean
+  dp_amount        Decimal           @default(0) @db.Money
+  created_on       DateTime?         @default(now())
+  modified_on      DateTime?         @default(now())
+  created_by       Int?
+  modified_by      Int?
+  is_active        Boolean           @default(true) @db.Boolean
+  mst_item         mst_item?         @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_customer     mst_customer?     @relation(fields: [customer_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_payment_type mst_payment_type? @relation(fields: [payment_type_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  tr_sale_detail   tr_sale_detail[]
 }
 
 model tr_sale_detail {
@@ -233,7 +256,7 @@ model tr_sale_detail {
 model tr_purchase {
   id                 String               @id @default(uuid()) @db.Uuid
   item_id            String               @db.Uuid
-  category_id        String               @db.Uuid
+  payment_type_id    String               @db.Uuid
   supplier_id        String               @db.Uuid
   quantity           BigInt?              @default(0) @db.BigInt
   price_of_unit      Decimal              @db.Money
@@ -246,7 +269,7 @@ model tr_purchase {
   modified_by        Int?
   is_active          Boolean              @default(true) @db.Boolean
   mst_item           mst_item?            @relation(fields: [item_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  mst_category       mst_category?        @relation(fields: [category_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  mst_payment_type   mst_payment_type?    @relation(fields: [payment_type_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
   mst_supplier       mst_supplier?        @relation(fields: [supplier_id], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
   tr_purchase_detail tr_purchase_detail[]
 }
